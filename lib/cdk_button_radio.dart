@@ -2,9 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'cdk_theme_notifier.dart';
 import 'cdk_theme.dart';
 
-// Copyright © 2023 Albert Palacios. All Rights Reserved.
-// Licensed under the BSD 3-clause license, see LICENSE file for details.
-
 class CDKButtonRadio extends StatelessWidget {
   final bool isSelected;
   final ValueChanged<bool>? onSelected;
@@ -80,99 +77,30 @@ class CDKButtonRadioPainter extends CustomPainter {
     required this.isLightTheme,
   });
 
-  void drawShadow(Canvas canvas, Size size, Offset center, double radius) {
-    // Defineix el path per al cercle
-    Path circlePath = Path()
-      ..addOval(Rect.fromCircle(center: center, radius: radius));
-
-    // Restringeix el dibuix de l'ombra al cercle
-    canvas.clipPath(circlePath);
-
-    // Pintura per a l'ombra
-    Paint shadowPaint = Paint();
-    Offset shadowOffset = const Offset(0, 0);
-    if (isLightTheme) {
-      shadowOffset = const Offset(0, -10);
-      shadowPaint = Paint()
-        ..color = CDKTheme.black.withOpacity(0.25)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
-    } else {
-      shadowOffset = const Offset(0, -8);
-      shadowPaint = Paint()
-        ..color = CDKTheme.black.withOpacity(0.5)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
-    }
-
-    // Dibuixar l'ombra
-    canvas.drawCircle(center + shadowOffset, radius, shadowPaint);
-
-    // Torna a establir el clip per a dibuixar la resta
-    canvas.clipRect(Rect.fromLTWH(0, 0, size.width, size.height));
-  }
-
   @override
   void paint(Canvas canvas, Size size) {
     double radius = size.width / 2;
-    double innerRadius = this.size * 0.4;
     Offset center = Offset(size.width / 2, size.height / 2);
     Paint paint = Paint();
 
-    if (isSelected && hasAppFocus) {
-      LinearGradient gradient = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [colorAccent200, colorAccent],
-      );
-
-      Paint paint = Paint()
-        ..style = PaintingStyle.fill
-        ..shader = gradient
-            .createShader(Rect.fromCircle(center: center, radius: radius));
-
-      canvas.drawCircle(center, radius, paint);
-    } else {
-      // Draw background circle & shadow
-      paint = Paint()
-        ..style = PaintingStyle.fill
-        ..color = colorBackgroundSecondary0;
-      canvas.drawCircle(center, radius, paint);
-
-      drawShadow(canvas, size, center, radius);
-    }
-    // Draw outer circle
-    Color outerColor = CDKTheme.grey;
-    if (!isLightTheme) {
-      outerColor = CDKTheme.grey600;
-    }
-    paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1
-      ..color = outerColor;
-
+    // Outer circle
+    paint.color = isLightTheme ? CDKTheme.grey : CDKTheme.grey600;
+    paint.style = PaintingStyle.stroke;
+    paint.strokeWidth = 1;
     canvas.drawCircle(center, radius, paint);
 
+    // Inner circle (selected state)
     if (isSelected) {
-      Color selectColor = CDKTheme.white;
-      if (isLightTheme && !hasAppFocus) {
-        selectColor = CDKTheme.black;
-      }
-      paint = Paint()
-        ..style = PaintingStyle.fill
-        ..color = selectColor;
-
-      canvas.drawCircle(
-          Offset(size.width / 2, size.height / 2), innerRadius / 2, paint);
+      paint.color = CDKTheme.black;
+      paint.style = PaintingStyle.fill;
+      canvas.drawCircle(center, radius * 0.3, paint);
     }
   }
 
   @override
   bool shouldRepaint(covariant CDKButtonRadioPainter oldDelegate) {
-    return oldDelegate.colorAccent != colorAccent ||
-        oldDelegate.colorAccent200 != colorAccent200 ||
-        oldDelegate.colorBackgroundSecondary0 != colorBackgroundSecondary0 ||
-        oldDelegate.isSelected != isSelected ||
-        oldDelegate.hasAppFocus != hasAppFocus ||
-        oldDelegate.isLightTheme != isLightTheme ||
-        oldDelegate.size != size;
+    return oldDelegate.isSelected != isSelected ||
+        oldDelegate.colorAccent != colorAccent ||
+        oldDelegate.isLightTheme != isLightTheme;
   }
 }

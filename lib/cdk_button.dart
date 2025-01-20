@@ -1,40 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'cdk_theme_notifier.dart';
-import 'cdk_theme.dart';
 
-// Copyright © 2023 Albert Palacios. All Rights Reserved.
-// Licensed under the BSD 3-clause license, see LICENSE file for details.
-
-/// Custom enum for button styles
 enum CDKButtonStyle { action, normal, destructive }
 
-/// A customizable button widget for Flutter applications.
-///
-/// The [CDKButton] allows for various styles, sizes, and states, making it versatile
-/// for different UI needs.
-///
-/// <img src="/flutter_cupertino_desktop_kit/gh-pages/doc-images/CDKButton_0.png" alt="CDKButton Example" style="max-width: 500px; width: 100%;">
-///
-/// ```dart
-/// CDKButton(
-///   onPressed: () {
-///     // Handle button press
-///   },
-///   child: Text('Click Me'),
-///   style: CDKButtonStyle.action,
-///   isLarge: true,
-/// )
-/// ```
-///
-/// Parameters:
-/// * `onPressed`: A callback function that is called when the button is pressed.
-///   If null, the button will be disabled.
-/// * `child`: The content of the button. Typically a `Text` or `Icon` widget.
-/// * `style`: The style of the button, with options like `action`, `normal`,
-///   and `destructive`. Defaults to `normal`.
-/// * `isLarge`: A flag to determine if the button should be displayed in a large
-///   size. Defaults to `false`.
-/// * `enabled`: A flag to enable or disable the button. Defaults to `true`.
 class CDKButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final Widget child;
@@ -56,168 +25,173 @@ class CDKButton extends StatefulWidget {
 }
 
 class CDKButtonState extends State<CDKButton> {
-  // Default font size.
-  static const double _fontSize = 12.0;
-
-  // Flag to track if the button is currently pressed.
+  static const double _fontSize = 13.0;
   bool _isPressed = false;
+  bool _isHovering = false;
+
+  // Paleta de colores inspirada en Windows XP (tema Luna).
+  final Color _xpBorderColor = const Color(0xFF7F9DB9);
+  final Color _xpGradientStart = const Color(0xFFF2F2F2);
+  final Color _xpGradientEnd = const Color(0xFFDCDCDC);
+
+  final Color _xpHoverStart = const Color(0xFFE2ECF6);
+  final Color _xpHoverEnd = const Color(0xFFC5D9F1);
+
+  final Color _xpPressedStart = const Color(0xFFBCD0EE);
+  final Color _xpPressedEnd = const Color(0xFFA2C0E8);
+
+  final Color _xpDisabledBorder = const Color(0xFFB6B6B6);
+  final Color _xpDisabledFill = const Color(0xFFF5F5F5); // Color más claro
+
+  // Color destructivo (rojo) para el botón de estilo destructivo.
+  final Color _xpDestructiveColor = const Color(0xFFCC3333);
 
   @override
   Widget build(BuildContext context) {
-    CDKTheme theme = CDKThemeNotifier.of(context)!.changeNotifier;
+    CDKThemeNotifier? notifier = CDKThemeNotifier.of(context);
+    final bool isLightTheme = notifier?.changeNotifier.isLight ?? true;
 
-    // Define styles and themes based on the button's state and style.
     BoxDecoration decoration;
-    Color color;
-    TextStyle textStyle;
-    IconThemeData iconTheme;
-    BoxShadow shadow = BoxShadow(
-      color: CDKTheme.black.withOpacity(0.1),
-      spreadRadius: 0,
-      blurRadius: 1,
-      offset: const Offset(0, 1),
-    );
+    Color textColor = Colors.black;
 
-    // Styling logic depending on the button's style and state.
-    if (!widget.enabled) {
-      switch (widget.style) {
-        case CDKButtonStyle.action:
-          decoration = BoxDecoration(
-              color: theme.isAppFocused ? theme.accent200 : CDKTheme.grey200,
-              borderRadius: BorderRadius.circular(6.0),
-              boxShadow: [shadow]);
-          color = theme.isAppFocused ? theme.accent600 : CDKTheme.grey;
-          textStyle = TextStyle(
-            fontSize: _fontSize,
-            color: color,
-          );
-          iconTheme = IconThemeData(color: color, size: _fontSize + 2);
-          break;
-
-        case CDKButtonStyle.normal:
-        case CDKButtonStyle.destructive:
-          decoration = BoxDecoration(
-              color: theme.backgroundSecondary0,
-              borderRadius: BorderRadius.circular(6.0),
-              boxShadow: [shadow]);
-          color = CDKTheme.grey;
-          textStyle = TextStyle(
-            fontSize: _fontSize,
-            color: color,
-          );
-          iconTheme = IconThemeData(color: color, size: _fontSize + 2);
-          break;
-      }
+    if (widget.style == CDKButtonStyle.destructive && widget.enabled) {
+      decoration = BoxDecoration(
+        gradient: null,
+        color: _xpDestructiveColor,
+        border: Border.all(color: _xpBorderColor, width: 1.0),
+        borderRadius: BorderRadius.circular(3.0),
+        boxShadow: _buildXpShadow(),
+      );
+      textColor = Colors.white;
+    } else if (!widget.enabled) {
+      decoration = BoxDecoration(
+        gradient: LinearGradient(
+          colors: [_xpDisabledFill, _xpDisabledFill],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(color: _xpDisabledBorder, width: 1.0),
+        borderRadius: BorderRadius.circular(3.0),
+        boxShadow: _buildXpShadow(),
+      );
+      textColor = Colors.grey.shade700;
+    } else if (_isPressed) {
+      decoration = BoxDecoration(
+        gradient: LinearGradient(
+          colors: [_xpPressedStart, _xpPressedEnd],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(color: _xpBorderColor, width: 1.0),
+        borderRadius: BorderRadius.circular(3.0),
+        boxShadow: _buildXpShadow(),
+      );
+      textColor = Colors.black;
+    } else if (_isHovering) {
+      decoration = BoxDecoration(
+        gradient: LinearGradient(
+          colors: [_xpHoverStart, _xpHoverEnd],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(color: _xpBorderColor, width: 1.0),
+        borderRadius: BorderRadius.circular(3.0),
+        boxShadow: _buildXpShadow(),
+      );
+      textColor = Colors.black;
     } else {
-      switch (widget.style) {
-        case CDKButtonStyle.action:
-          if (theme.isAppFocused) {
-            decoration = BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: _isPressed
-                      ? [theme.accent100, theme.accent]
-                      : [theme.accent300, theme.accent500],
-                ),
-                borderRadius: BorderRadius.circular(6.0),
-                boxShadow: [shadow]);
-            color = _isPressed ? theme.accent50 : CDKTheme.white;
-            textStyle = TextStyle(
-              fontSize: _fontSize,
-              color: color,
-            );
-            iconTheme = IconThemeData(color: color, size: _fontSize + 2);
-          } else {
-            decoration = BoxDecoration(
-                color:
-                    _isPressed ? CDKTheme.grey200 : theme.backgroundSecondary0,
-                border: Border.all(color: theme.backgroundSecondary1),
-                borderRadius: BorderRadius.circular(6.0),
-                boxShadow: [shadow]);
-            color = CDKTheme.black;
-            textStyle = TextStyle(
-              fontSize: _fontSize,
-              color: color,
-            );
-            iconTheme = IconThemeData(color: color, size: _fontSize + 2);
-          }
-          break;
-
-        case CDKButtonStyle.destructive:
-          decoration = BoxDecoration(
-              color: theme.isLight
-                  ? _isPressed
-                      ? CDKTheme.grey50
-                      : CDKTheme.white
-                  : _isPressed
-                      ? CDKTheme.grey500
-                      : theme.backgroundSecondary0,
-              border: theme.isLight
-                  ? Border.all(color: CDKTheme.grey70)
-                  : Border.all(color: CDKTheme.grey600),
-              borderRadius: BorderRadius.circular(6.0),
-              boxShadow: [shadow]);
-          color = CDKTheme.red;
-          textStyle = TextStyle(
-            fontSize: _fontSize,
-            color: color,
-          );
-          iconTheme = IconThemeData(color: color, size: _fontSize + 2);
-          break;
-
-        default:
-          decoration = BoxDecoration(
-              color: theme.isLight
-                  ? _isPressed
-                      ? CDKTheme.grey50
-                      : CDKTheme.white
-                  : _isPressed
-                      ? CDKTheme.grey500
-                      : theme.backgroundSecondary0,
-              border: theme.isLight
-                  ? Border.all(color: CDKTheme.grey70)
-                  : Border.all(color: CDKTheme.grey600),
-              borderRadius: BorderRadius.circular(6.0),
-              boxShadow: [shadow]);
-          color = theme.colorText;
-          textStyle = TextStyle(
-            fontSize: _fontSize,
-            color: color,
-          );
-          iconTheme = IconThemeData(color: color, size: _fontSize + 2);
-      }
+      decoration = BoxDecoration(
+        gradient: LinearGradient(
+          colors: [_xpGradientStart, _xpGradientEnd],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(color: _xpBorderColor, width: 1.0),
+        borderRadius: BorderRadius.circular(3.0),
+        boxShadow: _buildXpShadow(),
+      );
+      textColor = (widget.style == CDKButtonStyle.destructive)
+          ? Colors.white
+          : Colors.black;
     }
 
-    return GestureDetector(
-      onTapDown: !widget.enabled
-          ? null
-          : (details) => setState(() => _isPressed = true),
-      onTapUp: !widget.enabled
-          ? null
-          : (details) => setState(() => _isPressed = false),
-      onTapCancel:
-          !widget.enabled ? null : () => setState(() => _isPressed = false),
-      onTap: !widget.enabled ? null : widget.onPressed,
-      child: IntrinsicWidth(
+    final TextStyle textStyle = TextStyle(
+      fontSize: _fontSize,
+      color: textColor,
+      fontFamily: 'Segoe UI',
+    );
+
+    return MouseRegion(
+      onEnter: (_) {
+        if (widget.enabled && !_isPressed) {
+          setState(() {
+            _isHovering = true;
+          });
+        }
+      },
+      onExit: (_) {
+        if (widget.enabled && !_isPressed) {
+          setState(() {
+            _isHovering = false;
+          });
+        }
+      },
+      child: GestureDetector(
+        onTapDown: !widget.enabled
+            ? null
+            : (details) => setState(() {
+                  _isPressed = true;
+                  _isHovering = false;
+                }),
+        onTapUp: !widget.enabled
+            ? null
+            : (details) => setState(() {
+                  _isPressed = false;
+                }),
+        onTapCancel:
+            !widget.enabled ? null : () => setState(() => _isPressed = false),
+        onTap: !widget.enabled ? null : widget.onPressed,
+        child: IntrinsicWidth(
           child: DecoratedBox(
-        decoration: decoration,
-        child: Padding(
-          padding: widget.isLarge
-              ? const EdgeInsets.fromLTRB(8, 8, 8, 10)
-              : widget.child is Text
-                  ? const EdgeInsets.fromLTRB(8, 3, 8, 5)
-                  : const EdgeInsets.fromLTRB(8, 4, 8, 4),
-          child: widget.child is Text
-              ? DefaultTextStyle(
+            decoration: decoration,
+            child: Container(
+              margin: const EdgeInsets.all(1.0),
+              decoration: (_isHovering && widget.enabled && !_isPressed)
+                  ? BoxDecoration(
+                      border: Border.all(color: Colors.orange, width: 3.0),
+                      borderRadius: BorderRadius.circular(3.0),
+                    )
+                  : null,
+              child: Padding(
+                padding: widget.isLarge
+                    ? const EdgeInsets.symmetric(vertical: 8, horizontal: 12)
+                    : const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                child: DefaultTextStyle(
                   style: textStyle,
                   child: widget.child,
-                )
-              : widget.child is Icon
-                  ? IconTheme.merge(data: iconTheme, child: widget.child)
-                  : widget.child,
+                ),
+              ),
+            ),
+          ),
         ),
-      )),
+      ),
     );
+  }
+
+  List<BoxShadow> _buildXpShadow() {
+    return [
+      BoxShadow(
+        color: Colors.white.withOpacity(0.6),
+        offset: const Offset(-1, -1),
+        blurRadius: 1,
+        spreadRadius: 0,
+      ),
+      BoxShadow(
+        color: Colors.black.withOpacity(0.15),
+        offset: const Offset(1, 1),
+        blurRadius: 2,
+        spreadRadius: 0,
+      ),
+    ];
   }
 }

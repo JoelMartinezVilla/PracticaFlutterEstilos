@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'cdk_picker_slider_chroma.dart';
 import 'cdk_picker_slider_gradient.dart';
 import 'cdk_theme.dart';
@@ -97,7 +97,12 @@ class CDKPickerColorHSVState extends State<CDKPickerColorHSV> {
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         color: const Color(0xFFD4D0C8), // Classic Windows XP background
-        border: Border.all(color: const Color(0xFF808080)),
+        border: Border(
+          top: const BorderSide(color: Color(0xFFFFFFFF)),
+          left: const BorderSide(color: Color(0xFFFFFFFF)),
+          right: const BorderSide(color: Color(0xFF808080)),
+          bottom: const BorderSide(color: Color(0xFF808080)),
+        ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -106,87 +111,106 @@ class CDKPickerColorHSVState extends State<CDKPickerColorHSV> {
           Container(
             padding: const EdgeInsets.all(4.0),
             decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFF000000)),
-              gradient: LinearGradient(
+              border: Border(
+                top: const BorderSide(color: Color(0xFFFFFFFF)),
+                left: const BorderSide(color: Color(0xFFFFFFFF)),
+                right: const BorderSide(color: Color(0xFF808080)),
+                bottom: const BorderSide(color: Color(0xFF808080)),
+              ),
+              gradient: const LinearGradient(
                 colors: [
-                  const Color(0xFFFFFFFF),
-                  const Color(0xFFB0B0B0),
+                  Color(0xFFEFEFEF),
+                  Color(0xFFB0B0B0),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
             ),
             child: SizedBox(
-                width: double.infinity,
-                height: 150,
-                child: CDKPickerSliderChroma(
-                  staturation: _saturation,
-                  brightness: _brightness,
-                  hueColor: hueSliderToColor,
-                  onChanged: (saturation, brightness) {
-                    setState(() {
-                      _saturation = saturation;
-                      _brightness = brightness;
-                      _callback();
-                    });
-                  },
-                )),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(2.0),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEFEFEF),
-              border: Border.all(color: const Color(0xFF000000)),
+              width: double.infinity,
+              height: 150,
+              child: CDKPickerSliderChroma(
+                staturation: _saturation,
+                brightness: _brightness,
+                hueColor: hueSliderToColor,
+                onChanged: (saturation, brightness) {
+                  setState(() {
+                    _saturation = saturation;
+                    _brightness = brightness;
+                    _callback();
+                  });
+                },
+              ),
             ),
-            child: SizedBox(
-                width: double.infinity,
-                height: 16,
-                child: CDKPickerSliderGradient(
-                  colors: _gradientHueColors,
-                  stops: _gradientHueStops,
-                  value: _hue,
-                  onChanged: (value, color) {
-                    setState(() {
-                      _hue = value;
-                      _callback();
-                    });
-                  },
-                )),
           ),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(2.0),
             decoration: BoxDecoration(
               color: const Color(0xFFEFEFEF),
-              border: Border.all(color: const Color(0xFF000000)),
+              border: Border(
+                top: const BorderSide(color: Color(0xFF808080)),
+                left: const BorderSide(color: Color(0xFF808080)),
+                right: const BorderSide(color: Color(0xFFFFFFFF)),
+                bottom: const BorderSide(color: Color(0xFFFFFFFF)),
+              ),
             ),
             child: SizedBox(
               width: double.infinity,
               height: 16,
-              child: Stack(children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(0),
-                  child: CustomPaint(
-                    painter: CDKUtilShaderGrid(5),
-                    child: Container(
-                      height: 14,
+              child: CDKPickerSliderGradient(
+                colors: _gradientHueColors,
+                stops: _gradientHueStops,
+                value: _hue,
+                onChanged: (value, color) {
+                  setState(() {
+                    _hue = value;
+                    _callback();
+                  });
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(2.0),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEFEFEF),
+              border: Border(
+                top: const BorderSide(color: Color(0xFF808080)),
+                left: const BorderSide(color: Color(0xFF808080)),
+                right: const BorderSide(color: Color(0xFFFFFFFF)),
+                bottom: const BorderSide(color: Color(0xFFFFFFFF)),
+              ),
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              height: 16,
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(0),
+                    child: CustomPaint(
+                      painter: CDKUtilShaderGrid(5),
+                      child: Container(
+                        height: 14,
+                      ),
                     ),
                   ),
-                ),
-                CDKPickerSliderGradient(
-                  colors: _gradientAlphaColors,
-                  stops: _gradientAlphaStops,
-                  thumbColorBackground: widget.value,
-                  value: _alpha,
-                  onChanged: (value, color) {
-                    setState(() {
-                      _alpha = value;
-                      _callback();
-                    });
-                  },
-                )
-              ]),
+                  CDKPickerSliderGradient(
+                    colors: _gradientAlphaColors,
+                    stops: _gradientAlphaStops,
+                    thumbColorBackground: widget.value,
+                    value: _alpha,
+                    onChanged: (value, color) {
+                      setState(() {
+                        _alpha = value;
+                        _callback();
+                      });
+                    },
+                  )
+                ],
+              ),
             ),
           ),
         ],

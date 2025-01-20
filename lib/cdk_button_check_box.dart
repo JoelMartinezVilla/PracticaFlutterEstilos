@@ -1,9 +1,6 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'cdk_theme_notifier.dart';
 import 'cdk_theme.dart';
-
-// Copyright © 2023 Albert Palacios. All Rights Reserved.
-// Licensed under the BSD 3-clause license, see LICENSE file for details.
 
 class CDKButtonCheckBox extends StatelessWidget {
   final bool value;

@@ -28,28 +28,12 @@ class CDKButtonColorState extends State<CDKButtonColor> {
   @override
   Widget build(BuildContext context) {
     CDKTheme theme = CDKThemeNotifier.of(context)!.changeNotifier;
-    Color colorBorder = theme.isLight
-        ? _isPressed
-            ? CDKTheme.grey90
-            : CDKTheme.grey60
-        : _isPressed
-            ? CDKTheme.grey800
-            : CDKTheme.grey600;
-    Color colorIcon = theme.isLight
-        ? _isPressed
-            ? CDKTheme.grey90
-            : _isHovered
-                ? CDKTheme.white
-                : CDKTheme.grey50
-        : _isPressed
-            ? CDKTheme.grey800
-            : _isHovered
-                ? CDKTheme.grey800
-                : CDKTheme.grey600;
+    Color colorBorder = const Color(0xFF003CA5); // Borde estilo Windows XP
 
     // Define styles and themes based on the button's state and style.
     BoxDecoration decoration;
 
+    // Sombra del botón.
     BoxShadow shadow = BoxShadow(
       color: CDKTheme.black.withOpacity(0.1),
       spreadRadius: 0,
@@ -57,70 +41,50 @@ class CDKButtonColorState extends State<CDKButtonColor> {
       offset: const Offset(0, 1),
     );
 
-    // Styling logic depending on the button's style and state.
+    // Definición del estilo del botón.
     decoration = BoxDecoration(
-        color: theme.backgroundSecondary0,
-        borderRadius: BorderRadius.circular(6.0),
-        boxShadow: [shadow]);
+      color: theme.backgroundSecondary0,
+      border: Border.all(color: colorBorder, width: 2), // Borde azul
+      boxShadow: [shadow],
+    );
 
     return GestureDetector(
-        onTapDown: !widget.enabled
-            ? null
-            : (details) => setState(() => _isPressed = true),
-        onTapUp: !widget.enabled
-            ? null
-            : (details) => setState(() => _isPressed = false),
-        onTap: widget.onPressed,
-        child: MouseRegion(
-          onEnter: (event) => setState(() => _isHovered = true),
-          onExit: (event) => setState(() => _isHovered = false),
-          child: SizedBox(
-            width: 65,
-            height: 22,
-            child: Stack(
-              children: [
-                DecoratedBox(
-                  decoration: decoration,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(6.0),
-                    child: CustomPaint(
-                      painter: CDKUtilShaderGrid(7),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Container(color: widget.color),
-                          ),
-                          Container(
-                            width: 20,
-                            color: Color(widget.color.value | 0xFF000000),
-                          ),
-                        ],
-                      ),
+      onTapDown: !widget.enabled
+          ? null
+          : (details) => setState(() => _isPressed = true),
+      onTapUp: !widget.enabled
+          ? null
+          : (details) => setState(() => _isPressed = false),
+      onTap: widget.onPressed,
+      child: MouseRegion(
+        onEnter: (event) => setState(() => _isHovered = true),
+        onExit: (event) => setState(() => _isHovered = false),
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: Stack(
+            children: [
+              DecoratedBox(
+                decoration: decoration,
+                child: ClipRect(
+                  child: CustomPaint(
+                    painter: CDKUtilShaderGrid(7),
+                    child: Container(
+                      color: widget.color, // Color de fondo del botón.
                     ),
                   ),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: colorBorder, width: 1),
-                    borderRadius: BorderRadius.circular(6.0),
-                  ),
+              ),
+              // Contenedor del borde azul.
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: colorBorder, width: 2),
                 ),
-                Positioned.fill(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: SizedBox(
-                      width: 20,
-                      child: IconTheme(
-                        data: const IconThemeData(size: 12),
-                        child:
-                            Icon(CupertinoIcons.chevron_down, color: colorIcon),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

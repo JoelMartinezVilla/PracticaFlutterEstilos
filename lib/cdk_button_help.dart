@@ -1,19 +1,14 @@
-import 'package:flutter/cupertino.dart';
-import 'cdk_theme_notifier.dart';
-import 'cdk_theme.dart';
-
-// Copyright © 2023 Albert Palacios. All Rights Reserved.
-// Licensed under the BSD 3-clause license, see LICENSE file for details.
+import 'package:flutter/material.dart';
 
 class CDKButtonHelp extends StatefulWidget {
   final double size;
-
   final VoidCallback? onPressed;
 
   const CDKButtonHelp({
     Key? key,
     this.onPressed,
-    this.size = 24.0,
+    this.size =
+        48.0, // Tamaño predeterminado más grande para parecerse al de XP
   }) : super(key: key);
 
   @override
@@ -21,29 +16,22 @@ class CDKButtonHelp extends StatefulWidget {
 }
 
 class CDKButtonHelpState extends State<CDKButtonHelp> {
-  /// Whether the button is currently pressed.
   bool _isPressed = false;
 
-  /// Handles the `onTapDown` event, updating the `_isPressed` state variable.
   void _onTapDown(TapDownDetails details) {
     setState(() => _isPressed = true);
   }
 
-  /// Handles the `onTapUp` event, updating the `_isPressed` state variable and calling the `onPressed` callback function.
   void _onTapUp(TapUpDetails details) {
     setState(() => _isPressed = false);
   }
 
-  /// Handles the `onTapCancel` event, updating the `_isPressed` state variable.
   void _onTapCancel() {
     setState(() => _isPressed = false);
   }
 
   @override
   Widget build(BuildContext context) {
-    CDKTheme theme = CDKThemeNotifier.of(context)!.changeNotifier;
-
-    /// Creates a GestureDetector widget to handle tap events.
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
@@ -52,22 +40,19 @@ class CDKButtonHelpState extends State<CDKButtonHelp> {
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: _isPressed
-              ? theme.isLight
-                  ? CDKTheme.grey50
-                  : CDKTheme.grey500
-              : theme.backgroundSecondary0,
+              ? const Color(0xFF004F9A)
+              : const Color(0xFF0078D7), // Azul oscuro al presionar
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: theme.colorText.withOpacity(0.1),
-              spreadRadius: 0,
-              blurRadius: 1,
-              offset: const Offset(0, 1),
+              color: Colors.black.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
           ],
-          border: theme.isLight
-              ? Border.all(color: CDKTheme.grey70)
-              : Border.all(color: CDKTheme.grey600),
+          border: Border.all(
+              color: Colors.white, width: widget.size * 0.1), // Aro blanco
         ),
         child: Container(
           width: widget.size,
@@ -77,8 +62,8 @@ class CDKButtonHelpState extends State<CDKButtonHelp> {
             '?',
             style: TextStyle(
               fontSize: widget.size / 1.5,
-              color: theme.colorText,
-              fontWeight: FontWeight.w300,
+              color: Colors.white, // Interrogación blanca
+              fontWeight: FontWeight.bold,
             ),
           ),
         ),

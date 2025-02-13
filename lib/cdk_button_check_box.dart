@@ -47,8 +47,10 @@ class CDKButtonCheckBoxPainter extends CustomPainter {
   final bool isSelected;
   final bool hasAppFocus;
   final double size;
-
   final bool isLightTheme;
+
+  final Color _xpGradientStart = const Color(0xFFF2F2F2);
+  final Color _xpGradientEnd = const Color(0xFFDCDCDC);
 
   CDKButtonCheckBoxPainter({
     required this.colorAccent,
@@ -68,12 +70,14 @@ class CDKButtonCheckBoxPainter extends CustomPainter {
       height: size.height,
     );
 
-    Paint paint = Paint();
+    Paint paint = Paint()
+      ..shader = LinearGradient(
+        colors: [_xpGradientStart, _xpGradientEnd],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(squareRect);
 
-    // Fondo blanco
-    paint = Paint()
-      ..style = PaintingStyle.fill
-      ..color = const Color(0xFFFFFFFF); // Blanco puro
+    // Fondo con gradiente
     canvas.drawRect(squareRect, paint);
 
     // Borde azul

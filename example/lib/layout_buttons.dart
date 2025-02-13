@@ -155,7 +155,7 @@ class _LayoutButtonsState extends State<LayoutButtons> {
             padding: const EdgeInsets.all(8),
             child: CDKButtonHelp(size: 24, onPressed: () {})),
       ]),
-      const Padding(padding: EdgeInsets.all(8), child: Text('CDKButtonIcon:')),
+      /* const Padding(padding: EdgeInsets.all(8), child: Text('CDKButtonIcon:')),
       Wrap(children: [
         Padding(
             padding: const EdgeInsets.all(8),
@@ -172,7 +172,7 @@ class _LayoutButtonsState extends State<LayoutButtons> {
                 isCircle: true,
                 isSelected: true,
                 onPressed: () {})),
-      ]),
+      ]),*/
       const Padding(
           padding: EdgeInsets.all(8), child: Text('CDKButtonSwitch:')),
       Wrap(children: [
@@ -212,7 +212,7 @@ class _LayoutButtonsState extends State<LayoutButtons> {
               },
             )),
       ]),
-      const Padding(
+      /*const Padding(
           padding: EdgeInsets.all(8), child: Text('CDKButtonDisclosure:')),
       Wrap(children: [
         Padding(
@@ -225,7 +225,7 @@ class _LayoutButtonsState extends State<LayoutButtons> {
                 });
               },
             )),
-      ]),
+      ]),*/
       const Padding(padding: EdgeInsets.all(8), child: Text('CDKButtonRadio:')),
       Wrap(children: [
         Padding(

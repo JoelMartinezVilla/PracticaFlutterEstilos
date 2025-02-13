@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'cdk_theme_notifier.dart';
 import 'cdk_theme.dart';
+import 'package:flutter/material.dart';
 
 // Copyright © 2023 Albert Palacios. All Rights Reserved.
 // Licensed under the BSD 3-clause license, see LICENSE file for details.
@@ -70,57 +71,65 @@ class CDKFieldTextState extends State<CDKFieldText> {
   @override
   Widget build(BuildContext context) {
     CDKTheme theme = CDKThemeNotifier.of(context)!.changeNotifier;
-
-    final BorderRadius borderRadius = widget.isRounded
-        ? BorderRadius.circular(25.0)
-        : BorderRadius.circular(4.0);
-
-    return CupertinoTextField(
-      textAlign: widget
-          .textAlign, // Flutter Bug: https://github.com/flutter/flutter/issues/139201
-      obscureText: widget.obscureText,
-      enabled: widget.enabled,
-      controller: widget.controller,
-      focusNode: _internalFocusNode,
-      onChanged: widget.onChanged,
-      onSubmitted: widget.onSubmitted,
-      padding: const EdgeInsets.fromLTRB(4, 2, 4, 4),
-      decoration: BoxDecoration(
-          color: theme.background,
-          borderRadius: borderRadius,
-          border: Border.all(
-            color: widget.enabled
-                ? CDKTheme.grey200
-                : theme.isLight
-                    ? CDKTheme.grey70
-                    : CDKTheme.grey700,
-            width: 1,
-          ),
-          boxShadow: _internalFocusNode.hasFocus
-              ? [
-                  BoxShadow(
-                    color: theme.isAppFocused
-                        ? theme.accent200
-                        : CDKTheme.transparent,
-                    spreadRadius: 1.5,
-                    blurRadius: 0.7,
-                    offset: const Offset(0, 0),
-                  )
-                ]
-              : []),
-      placeholder: widget.placeholder,
-      style: TextStyle(
-          fontSize: widget.textSize,
+    return CustomPaint(
+      painter: XPTextFieldPainter(),
+      child: CupertinoTextField(
+        textAlign: widget.textAlign,
+        obscureText: widget.obscureText,
+        enabled: widget.enabled,
+        controller: widget.controller,
+        focusNode: _internalFocusNode,
+        onChanged: widget.onChanged,
+        onSubmitted: widget.onSubmitted,
+        padding: const EdgeInsets.fromLTRB(4, 2, 4, 4),
+        decoration: BoxDecoration(
+            border: Border.all(
           color: widget.enabled
-              ? theme.colorText
+              ? CDKTheme.grey200
               : theme.isLight
-                  ? CDKTheme.grey100
-                  : CDKTheme.grey700),
-      prefix: widget.prefixIcon == null
-          ? null
-          : Icon(widget.prefixIcon, color: CDKTheme.grey),
-      keyboardType: widget.keyboardType,
-      inputFormatters: widget.inputFormatters,
+                  ? CDKTheme.grey70
+                  : CDKTheme.grey700,
+          width: 1,
+        )),
+        placeholder: widget.placeholder,
+        style: TextStyle(
+            fontSize: widget.textSize,
+            color: widget.enabled
+                ? theme.colorText
+                : theme.isLight
+                    ? CDKTheme.grey100
+                    : CDKTheme.grey700),
+        prefix: widget.prefixIcon == null
+            ? null
+            : Icon(widget.prefixIcon, color: CDKTheme.grey),
+        keyboardType: widget.keyboardType,
+        inputFormatters: widget.inputFormatters,
+      ),
     );
   }
+}
+
+class XPTextFieldPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+
+    // Bottom and right border (shadow)
+    paint.color = Colors.grey[300]!;
+    canvas.drawLine(
+        Offset(0, size.height), Offset(size.width, size.height), paint);
+    canvas.drawLine(
+        Offset(size.width, 0), Offset(size.width, size.height), paint);
+
+    // Inner shadow line
+    paint.strokeWidth = 1;
+    paint.color = Colors.grey[500]!;
+    canvas.drawLine(const Offset(0, 0), Offset(size.width, 0), paint);
+    canvas.drawLine(const Offset(0, 0), Offset(0, size.height), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
